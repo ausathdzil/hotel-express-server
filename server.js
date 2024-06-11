@@ -29,6 +29,17 @@ app.get("/employees", async (req, res) => {
   }
 });
 
+app.get("/employees/:id", async (req, res) => {
+  try {
+    const employee = await pool.query("SELECT * FROM employees WHERE id = ?", [req.params.id]);
+    res.json(employee[0]);
+  }
+  catch (error) {
+    console.error("Error getting employee:", error);
+    res.status(500).json({ error: "Error getting employee" });
+  }
+});
+
 app.post("/employees", async (req, res) => {
   const { name, email, phone_number, address, job_title, image_url } = req.body;
 
