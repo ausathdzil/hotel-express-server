@@ -375,7 +375,7 @@ app.delete("/payments/:id", async (req, res) => {
 
 app.get("/reservations", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM reservations");
+    const [rows] = await pool.query("SELECT * FROM reservations ORDER BY check_in DESC");
     res.json(rows);
   } catch (error) {
     console.error("Error getting reservations:", error);
@@ -466,10 +466,40 @@ app.delete("/reservations/:id", async (req, res) => {
 app.get("/revenue", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT SUM(amount) as total FROM payments");
-    res.json(rows[0].total);
+    res.json(parseInt(rows[0].total));
   } catch (error) {
     console.error("Error getting revenue:", error);
     res.status(500).json({ error: "Error getting revenue" });
+  }
+});
+
+app.get("/datediff", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT DATEDIFF(check_out, NOW()) as days_remaining FROM reservations");
+    res.json(rows.map(row => parseInt(row.days_remaining)));
+  } catch (error) {
+    console.error("Error getting datediff:", error);
+    res.status(500).json({ error: "Error getting datediff" });
+  }
+});
+
+app.get("/available_rooms", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT COUNT(*) as available_rooms FROM rooms WHERE status = 'vacant'");
+    res.json(parseInt(rows[0].available_rooms));
+  } catch (error) {
+    console.error("Error getting available rooms:", error);
+    res.status(500).json({ error: "Error getting available rooms" });
+  }
+});
+
+app.get("/occupied_rooms", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT COUNT(*) as occupied_rooms FROM rooms WHERE status = 'reserved'");
+    res.json(parseInt(rows[0].occupied_rooms));
+  } catch (error) {
+    console.error("Error getting occupied rooms:", error);
+    res.status(500).json({ error: "Error getting occupied rooms" });
   }
 });
 
