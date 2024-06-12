@@ -460,9 +460,10 @@ app.delete("/reservations/:id", async (req, res) => {
 });
 
 /******************************************************/
-/********************* Revenue   **********************/
 /******************************************************/
-
+/********************* Miscellaneous   **********************/
+/******************************************************/
+/******************************************************/
 app.get("/revenue", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT SUM(amount) as total FROM payments");
@@ -500,6 +501,16 @@ app.get("/occupied_rooms", async (req, res) => {
   } catch (error) {
     console.error("Error getting occupied rooms:", error);
     res.status(500).json({ error: "Error getting occupied rooms" });
+  }
+});
+
+app.get("/pending_payments", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT COUNT(*) as pending_payments FROM reservations WHERE status = 'pending'");
+    res.json(parseInt(rows[0].pending_payments));
+  } catch (error) {
+    console.error("Error getting pending payments:", error);
+    res.status(500).json({ error: "Error getting pending payments" });
   }
 });
 
