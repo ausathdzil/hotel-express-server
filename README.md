@@ -1,4 +1,4 @@
-server side application for hotel express
+server side application for hotel express.
 
 **tech stack**
 - [node.js](https://github.com/nodejs/node)
